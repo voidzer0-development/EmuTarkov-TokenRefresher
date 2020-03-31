@@ -36,6 +36,15 @@ namespace Tokenme
             return ((seconds + 45) ^ 698464131);
         }
 
+        static byte[] toBase64Array(Dictionary<string, object> tokenData)
+        {
+            string json = JsonConvert.SerializeObject(tokenData);
+            byte[] encodedByte = System.Text.ASCIIEncoding.ASCII.GetBytes(json + '\0');
+            string base64Encoded = Convert.ToBase64String(encodedByte);
+            byte[] bytes = Encoding.ASCII.GetBytes(base64Encoded);
+            return bytes;
+        }
+
         static void refreshToken(string email, string password)
         {
             Dictionary<string, object> tokenData = new Dictionary<string, object>();
@@ -44,14 +53,9 @@ namespace Tokenme
             tokenData.Add("toggle", true);
             tokenData.Add("timestamp", timestampUnixUtc());
 
-            string json = JsonConvert.SerializeObject(tokenData);
-            byte[] encodedByte = System.Text.ASCIIEncoding.ASCII.GetBytes(json + '\0');
-            string base64Encoded = Convert.ToBase64String(encodedByte);
-            byte[] bytes = Encoding.ASCII.GetBytes(base64Encoded);
-
             Microsoft.Win32.RegistryKey key;
             key = Microsoft.Win32.Registry.CurrentUser.CreateSubKey("Software\\Battlestate Games\\EscapeFromTarkov");
-            key.SetValue("bC5vLmcuaS5u_h1472614626", bytes, RegistryValueKind.Binary);
+            key.SetValue("bC5vLmcuaS5u_h1472614626", toBase64Array(tokenData), RegistryValueKind.Binary);
             key.Close();
 
             System.Console.WriteLine("Wrote Key with timestamp: " + timestampUnixUtc());

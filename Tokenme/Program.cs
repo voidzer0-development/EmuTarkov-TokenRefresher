@@ -59,7 +59,7 @@ namespace Tokenme
 
         }
 
-        static int delay = 120; //delay * 1000 = seconds
+        static int delay = 60; //delay * 1000 = seconds
 
         static void Main(string[] args)
         {
